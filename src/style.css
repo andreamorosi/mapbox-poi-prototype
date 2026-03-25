@@ -166,6 +166,7 @@ body {
 }
 
 .form-group input[type="text"],
+.form-group input[type="number"],
 .form-group textarea {
   width: 100%;
   padding: 9px 11px;
@@ -180,6 +181,7 @@ body {
 }
 
 .form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus,
 .form-group textarea:focus {
   border-color: #555;
   background: #fff;

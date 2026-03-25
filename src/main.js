@@ -4,6 +4,7 @@ import { initMap } from './map.js';
 import { initModal, openModal } from './modal.js';
 import { loadPOIs, savePOIs, generateId } from './store.js';
 import { addMarker, removeMarker, updateMarker } from './markers.js';
+import { initCircleLayers, updateCircles, initDrawControl } from './zones.js';
 
 const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -38,6 +39,7 @@ function onEdit(id) {
     description: poi.description,
     icon: poi.icon,
     color: poi.color,
+    radius: poi.radius,
     editMode: true,
   }).then((result) => {
     if (result.action === 'save') {
@@ -46,9 +48,11 @@ function onEdit(id) {
         description: result.description,
         icon: result.icon,
         color: result.color,
+        radius: result.radius,
       });
       savePOIs(pois);
       updateMarker(map, poi, onEdit);
+      updateCircles(map, pois);
     } else if (result.action === 'delete') {
       pois = pois.filter((p) => p.id !== id);
       savePOIs(pois);
@@ -58,10 +62,15 @@ function onEdit(id) {
 }
 
 map.on('load', () => {
+  initCircleLayers(map);
+  const draw = initDrawControl(map);
+
   pois.forEach((poi) => addMarker(map, poi, onEdit));
+  updateCircles(map, pois);
 
   map.on('click', (e) => {
-    // Ignore clicks on markers (they stop propagation)
+    // Ignore clicks when draw mode is active
+    if (draw.getMode() !== 'simple_select') return;
     const coordinates = [e.lngLat.lng, e.lngLat.lat];
 
     openModal().then((result) => {
@@ -74,11 +83,13 @@ map.on('load', () => {
         description: result.description,
         icon: result.icon,
         color: result.color,
+        radius: result.radius,
       };
 
       pois.push(poi);
       savePOIs(pois);
       addMarker(map, poi, onEdit);
+      updateCircles(map, pois);
     });
   });
 });

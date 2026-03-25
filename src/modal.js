@@ -31,6 +31,10 @@ export function initModal() {
             <span id="poi-color-value">#e53e3e</span>
           </div>
         </div>
+        <div class="form-group">
+          <label for="poi-radius">Radius (km)</label>
+          <input type="number" id="poi-radius" placeholder="0" min="0" max="50" step="0.1" autocomplete="off" />
+        </div>
       </div>
 
       <div class="modal-actions">
@@ -86,6 +90,7 @@ function handleSave() {
     description: overlay.querySelector('#poi-desc').value.trim(),
     icon: overlay.querySelector('#poi-icon').value.trim() || '📍',
     color: overlay.querySelector('#poi-color').value,
+    radius: parseFloat(overlay.querySelector('#poi-radius').value) || 0,
   });
 }
 
@@ -110,7 +115,7 @@ function closeModal() {
   overlay.querySelector('#poi-title-error').classList.remove('visible');
 }
 
-export function openModal({ title = '', description = '', icon = '📍', color = '#e53e3e', editMode = false } = {}) {
+export function openModal({ title = '', description = '', icon = '📍', color = '#e53e3e', radius = 0, editMode = false } = {}) {
   return new Promise((resolve) => {
     pendingResolve = resolve;
 
@@ -122,6 +127,7 @@ export function openModal({ title = '', description = '', icon = '📍', color =
     overlay.querySelector('#poi-icon').value = icon;
     overlay.querySelector('#poi-color').value = color;
     overlay.querySelector('#poi-color-value').textContent = color;
+    overlay.querySelector('#poi-radius').value = radius || '';
     overlay.querySelector('#btn-delete').style.display = editMode ? '' : 'none';
 
     overlay.classList.add('open');
